@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Générateur de messages — CPC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface-2: #1d1d1d;
+    --border: #2a2a2a;
+    --text: #ffffff;
+    --text-dim: #9a9a9a;
+    --accent: #5CD6AD;
+    --accent-hover: #4ec49c;
+    --danger: #e06060;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 2px;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  header p {
+    color: var(--text-dim);
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 800px) {
+    .grid { grid-template-columns: 1fr; }
+    h1 { font-size: 36px; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .panel h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    margin: 0 0 20px;
+    color: var(--accent);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: 'Inter', monospace;
+  }
+
+  .field { margin-bottom: 18px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .checkbox-row input { width: auto; }
+
+  .checkbox-row label {
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  button {
+    width: 100%;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    border-radius: 6px;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 8px;
+  }
+
+  button:hover:not(:disabled) { background: var(--accent-hover); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  button.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  button.secondary:hover:not(:disabled) {
+    background: rgba(92, 214, 173, 0.08);
+  }
+
+  .output-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    min-height: 300px;
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .output-placeholder {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .actions button { flex: 1; margin-top: 0; }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(14, 14, 14, 0.3);
+    border-top-color: #0e0e0e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: #0e0e0e;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: transform 0.3s;
+    z-index: 100;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--danger); color: #fff; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>CPC <span class="accent">/ Messages</span></h1>
+    <p>Générateur de messages d'annonce d'interventions pour le Contentpreneur Club.</p>
+  </header>
+
+  <div class="grid">
+    <!-- ENTRÉES -->
+    <div class="panel">
+      <h2>Entrées</h2>
+
+      <div class="field">
+        <label for="templateType">Type de message</label>
+        <select id="templateType">
+          <option value="annonce-principale">Annonce principale (J-3 à J-7)</option>
+          <option value="rappel-j-1">Rappel J-1</option>
+          <option value="rappel-matin">Rappel matin du jour J</option>
+          <option value="maintenant">Message "MAINTENANT" (30 min avant)</option>
+          <option value="hot-seats">Variante Hot Seats</option>
+          <option value="cloture">Clôture post-intervention</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="prenom">Prénom intervenant</label>
+          <input type="text" id="prenom" placeholder="Ex : Maxence" />
+        </div>
+        <div class="field">
+          <label for="dateHeure">Date / heure</label>
+          <input type="text" id="dateHeure" placeholder="Ex : ce soir à 20h" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="format">Format intervention</label>
+        <select id="format">
+          <option value="Masterclass">Masterclass</option>
+          <option value="Atelier">Atelier</option>
+          <option value="Hot Seats">Hot Seats</option>
+          <option value="Q&A">Q&A</option>
+        </select>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="placesLimitees" />
+        <label for="placesLimitees">Places limitées en Hot Seats ?</label>
+      </div>
+
+      <div class="field hidden" id="nbPlacesField">
+        <label for="nbPlaces">Nombre de places</label>
+        <input type="number" id="nbPlaces" min="1" max="50" value="10" />
+      </div>
+
+      <div class="field">
+        <label for="ficheIntervenant">Fiche intervenant (copier-coller)</label>
+        <textarea id="ficheIntervenant" placeholder="Parcours, spécialité, résultats clés, réseaux sociaux..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="resumeIntervention">Résumé intervention (copier-coller)</label>
+        <textarea id="resumeIntervention" placeholder="Sujet, ce que les gens vont apprendre, angle, structure..."></textarea>
+      </div>
+
+      <button id="generateBtn">Générer le message</button>
+    </div>
+
+    <!-- SORTIE -->
+    <div class="panel">
+      <h2>Message</h2>
+      <div id="output" class="output-box">
+        <span class="output-placeholder">Le message apparaîtra ici.</span>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="copyBtn" disabled>Copier</button>
+        <button class="secondary" id="regenBtn" disabled>Régénérer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ⚠️ Remplacer par l'URL de ton Cloudflare Worker après déploiement
+  const WORKER_URL = "https://cpc-generator.TON-SOUS-DOMAINE.workers.dev";
+
+  const $ = (id) => document.getElementById(id);
+
+  const placesCheck = $("placesLimitees");
+  const nbPlacesField = $("nbPlacesField");
+  const formatSelect = $("format");
+  const templateSelect = $("templateType");
+
+  // Auto-active les places limitées si Hot Seats sélectionné
+  function syncHotSeats() {
+    const isHotSeats = formatSelect.value === "Hot Seats" || templateSelect.value === "hot-seats";
+    if (isHotSeats) {
+      placesCheck.checked = true;
+      nbPlacesField.classList.remove("hidden");
+    }
+  }
+
+  placesCheck.addEventListener("change", () => {
+    nbPlacesField.classList.toggle("hidden", !placesCheck.checked);
+  });
+  formatSelect.addEventListener("change", syncHotSeats);
+  templateSelect.addEventListener("change", syncHotSeats);
+
+  // Toast
+  function toast(msg, isError = false) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.toggle("error", isError);
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2500);
+  }
+
+  // Génération
+  async function generate() {
+    const payload = {
+      templateType: templateSelect.value,
+      prenom: $("prenom").value.trim(),
+      dateHeure: $("dateHeure").value.trim(),
+      format: formatSelect.value,
+      placesLimitees: placesCheck.checked,
+      nbPlaces: placesCheck.checked ? parseInt($("nbPlaces").value) || 10 : null,
+      ficheIntervenant: $("ficheIntervenant").value.trim(),
+      resumeIntervention: $("resumeIntervention").value.trim(),
+    };
+
+    if (!payload.prenom || !payload.ficheIntervenant || !payload.resumeIntervention) {
+      toast("Prénom, fiche et résumé sont obligatoires.", true);
+      return;
+    }
+
+    const btn = $("generateBtn");
+    const regenBtn = $("regenBtn");
+    btn.disabled = true;
+    regenBtn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Génération...';
+
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      $("output").textContent = data.message || "Pas de réponse.";
+      $("copyBtn").disabled = false;
+      $("regenBtn").disabled = false;
+    } catch (err) {
+      console.error(err);
+      toast("Erreur : " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Générer le message";
+    }
+  }
+
+  $("generateBtn").addEventListener("click", generate);
+  $("regenBtn").addEventListener("click", generate);
+
+  // Copier
+  $("copyBtn").addEventListener("click", async () => {
+    const text = $("output").textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Copié dans le presse-papiers.");
+    } catch {
+      toast("Copie impossible.", true);
+    }
+  });
+</script>
+</body>
+</html>
