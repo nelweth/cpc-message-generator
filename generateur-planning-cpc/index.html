@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Générateur Planning — CPC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface-2: #1d1d1d;
+    --border: #2a2a2a;
+    --text: #ffffff;
+    --text-dim: #9a9a9a;
+    --accent: #5CD6AD;
+    --accent-hover: #4ec49c;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+  }
+
+  .app {
+    display: flex;
+    gap: 40px;
+    padding: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ── FORMULAIRE ── */
+  .form-panel {
+    width: 420px;
+    flex-shrink: 0;
+  }
+
+  .form-panel h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    margin: 0 0 6px;
+  }
+
+  .form-panel h1 span { color: var(--accent); }
+
+  .form-panel > p {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 0 0 28px;
+  }
+
+  .day-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  .day-block h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px;
+    color: var(--accent);
+  }
+
+  .day-block label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    margin-top: 10px;
+  }
+
+  .day-block label:first-of-type { margin-top: 0; }
+
+  .day-block input[type="text"],
+  .day-block input[type="time"] {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+  }
+
+  .day-block input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .checkbox-row input { width: auto; accent-color: var(--accent); }
+  .checkbox-row label {
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .repos-fields { display: none; }
+  .event-fields { display: block; }
+
+  .btn-generate {
+    width: 100%;
+    background: var(--accent);
+    color: #0e0e0e;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.15s;
+  }
+
+  .btn-generate:hover { background: var(--accent-hover); }
+
+  .btn-screenshot {
+    width: 100%;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.15s;
+  }
+
+  .btn-screenshot:hover { background: rgba(92,214,173,0.08); }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* ── PREVIEW ── */
+  .preview-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .preview-panel h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin: 0 0 20px;
+    align-self: flex-start;
+  }
+
+  /* ── PLANNING CARD ── */
+  #planning-output {
+    width: 1080px;
+    min-height: 1500px;
+    background: #0A0A0A;
+    padding: 70px 60px 80px;
+    transform-origin: top left;
+  }
+
+  .planning-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1;
+    margin: 0 0 18px;
+    letter-spacing: 4px;
+  }
+
+  .planning-title-line {
+    width: 220px;
+    height: 5px;
+    background: #5CD6AD;
+    margin: 0 auto 50px;
+    border-radius: 2px;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .day-card {
+    background: #0F0F0F;
+    border: 3px solid #5CD6AD;
+    border-radius: 18px;
+    padding: 26px 30px;
+  }
+
+  .day-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 12px;
+  }
+
+  .card-day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .card-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 50px;
+    color: #5CD6AD;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .card-time.no-event {
+    color: #333;
+  }
+
+  .card-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+
+  .card-intervenant {
+    font-family: 'Inter', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #5CD6AD;
+    margin: 0 0 6px;
+  }
+
+  .card-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- FORMULAIRE -->
+  <div class="form-panel">
+    <h1>CPC <span>/</span> Planning</h1>
+    <p>Remplis les jours, génère le visuel, screenshot et c'est prêt.</p>
+
+    <div id="days-form"></div>
+
+    <button class="btn-generate" onclick="generatePlanning()">Générer le planning</button>
+    <button class="btn-screenshot" onclick="downloadPlanning()">Télécharger en PNG</button>
+    <p class="hint">
+      ⚠️ Pour télécharger, installe d'abord la librairie html2canvas (voir README).<br>
+      Sinon : zoom Chrome à 100% → Cmd+Shift+4 → sélectionne le visuel.
+    </p>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-panel">
+    <h2>Aperçu</h2>
+    <div id="planning-output">
+      <div class="planning-title">LA SEMAINE DU CLUB</div>
+      <div class="planning-title-line"></div>
+      <div class="days-grid" id="planning-grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+const DEFAULTS = [
+  { repos: false, heure: '20:00', titre: 'Call de bienvenue avec KIKI', intervenant: 'Krix', note: '' },
+  { repos: false, heure: '18:30', titre: 'Call Soutien et Motivation', intervenant: 'Elizy', note: '' },
+  { repos: true,  heure: '',     titre: '',                            intervenant: '',      note: 'À demain !' },
+  { repos: false, heure: '19:30', titre: 'Le mindset de la prise de parole', intervenant: 'Tox', note: '' },
+  { repos: false, heure: '21:00', titre: 'Soirée Gaming',              intervenant: 'Open à tous', note: '' },
+  { repos: true,  heure: '',     titre: '',                            intervenant: '',      note: 'À demain !' },
+  { repos: false, heure: '18:00', titre: 'Masterclass Productivité et Discipline', intervenant: 'Téo', note: '' },
+];
+
+// Construit le formulaire
+function buildForm() {
+  const container = document.getElementById('days-form');
+  DAYS.forEach((day, i) => {
+    const d = DEFAULTS[i];
+    container.innerHTML += `
+      <div class="day-block">
+        <h3>${day.toUpperCase()}</h3>
+        <div class="checkbox-row">
+          <input type="checkbox" id="repos-${i}" ${d.repos ? 'checked' : ''} onchange="toggleRepos(${i})">
+          <label for="repos-${i}">Repos / pas d'intervention</label>
+        </div>
+        <div class="event-fields" id="event-${i}" style="${d.repos ? 'display:none' : ''}">
+          <label>Heure</label>
+          <input type="text" id="heure-${i}" value="${d.heure}" placeholder="ex : 20:00">
+          <label>Titre de l'intervention</label>
+          <input type="text" id="titre-${i}" value="${d.titre}" placeholder="ex : Masterclass de Téo">
+          <label>Intervenant(e)</label>
+          <input type="text" id="intervenant-${i}" value="${d.intervenant}" placeholder="ex : Tox">
+          <label>Note (optionnel)</label>
+          <input type="text" id="note-${i}" value="${d.note}" placeholder="ex : Open à tous">
+        </div>
+        <div class="repos-fields" id="repos-fields-${i}" style="${d.repos ? 'display:block' : ''}">
+          <label>Message</label>
+          <input type="text" id="repos-msg-${i}" value="${d.note || 'À demain !'}" placeholder="À demain !">
+        </div>
+      </div>
+    `;
+  });
+}
+
+function toggleRepos(i) {
+  const isRepos = document.getElementById(`repos-${i}`).checked;
+  document.getElementById(`event-${i}`).style.display = isRepos ? 'none' : 'block';
+  document.getElementById(`repos-fields-${i}`).style.display = isRepos ? 'block' : 'none';
+}
+
+function generatePlanning() {
+  const grid = document.getElementById('planning-grid');
+  grid.innerHTML = '';
+
+  const cards = [];
+
+  DAYS.forEach((day, i) => {
+    const isRepos = document.getElementById(`repos-${i}`).checked;
+
+    if (isRepos) {
+      const msg = document.getElementById(`repos-msg-${i}`)?.value || 'À demain !';
+      cards.push({ day, isRepos: true, msg, fullWidth: false });
+    } else {
+      const heure = document.getElementById(`heure-${i}`).value;
+      const titre = document.getElementById(`titre-${i}`).value;
+      const intervenant = document.getElementById(`intervenant-${i}`).value;
+      const note = document.getElementById(`note-${i}`).value;
+      cards.push({ day, isRepos: false, heure, titre, intervenant, note, fullWidth: false });
+    }
+  });
+
+  // Dimanche seul en bas -> full width
+  cards[6].fullWidth = true;
+
+  cards.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'day-card' + (card.fullWidth ? ' full-width' : '');
+
+    if (card.isRepos) {
+      div.innerHTML = `
+        <div class="card-header">
+          <div class="card-day">${card.day.toUpperCase()}</div>
+          <div class="card-time no-event">—</div>
+        </div>
+        <div class="card-title" style="opacity:0.5">Repos bien mérité</div>
+        <div class="card-note">—</div>
+        <div class="card-note">${card.msg}</div>
+      `;
+    } else {
+      div.innerHTML = `
+        <div class="card-header">
+          <div class="card-day">${card.day.toUpperCase()}</div>
+          <div class="card-time">${card.heure}</div>
+        </div>
+        ${card.titre ? `<div class="card-title">${card.titre}</div>` : ''}
+        ${card.intervenant ? `<div class="card-intervenant">${card.intervenant}</div>` : ''}
+        ${card.note ? `<div class="card-note">${card.note}</div>` : ''}
+      `;
+    }
+
+    grid.appendChild(div);
+  });
+
+  // Scale pour que le preview rentre dans l'écran
+  scalePreview();
+}
+
+function scalePreview() {
+  const output = document.getElementById('planning-output');
+  const panel = output.parentElement;
+  const availableWidth = panel.offsetWidth - 40;
+  const scale = Math.min(1, availableWidth / 1080);
+  output.style.transform = `scale(${scale})`;
+  output.parentElement.style.height = (1500 * scale + 40) + 'px';
+}
+
+async function downloadPlanning() {
+  if (typeof html2canvas === 'undefined') {
+    alert('html2canvas non chargé. Consulte le README pour l\'installer, ou fais un screenshot manuel.');
+    return;
+  }
+  const output = document.getElementById('planning-output');
+  const savedTransform = output.style.transform;
+  output.style.transform = 'scale(1)';
+  const canvas = await html2canvas(output, { scale: 1, width: 1080, height: 1500, backgroundColor: '#0A0A0A' });
+  output.style.transform = savedTransform;
+  const link = document.createElement('a');
+  link.download = 'planning-cpc.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+window.addEventListener('resize', scalePreview);
+buildForm();
+generatePlanning();
+</script>
+</body>
+</html>
