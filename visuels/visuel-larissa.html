@@ -62,21 +62,25 @@
 
   .paysage .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 30px;
-    letter-spacing: 4px;
+    font-size: 22px;
+    letter-spacing: 3px;
     color: #0A0A0A;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    opacity: 0.7;
   }
 
-  .paysage .live-dot {
-    width: 16px;
-    height: 16px;
+  .live-dot {
+    width: 10px;
+    height: 10px;
     background: #ff2e2e;
     border-radius: 50%;
-    box-shadow: 0 0 12px rgba(255,46,46,0.7);
+    box-shadow: 0 0 8px rgba(255,46,46,0.7);
     display: inline-block;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255,46,46,0.7); }
+    50% { opacity: 0.6; box-shadow: 0 0 14px rgba(255,46,46,0.9); }
   }
 
   .paysage .hook-number {
@@ -118,7 +122,9 @@
   }
 
   .paysage .format-tag {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     border: 2px solid #5CD6AD;
     color: #5CD6AD;
     font-family: 'Inter', sans-serif;
@@ -201,24 +207,16 @@
 
   .carre .logo {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 34px;
-    letter-spacing: 4px;
+    font-size: 26px;
+    letter-spacing: 3px;
     color: #0A0A0A;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .carre .live-dot {
-    width: 18px;
-    height: 18px;
-    background: #ff2e2e;
-    border-radius: 50%;
-    box-shadow: 0 0 14px rgba(255,46,46,0.7);
-    display: inline-block;
+    opacity: 0.7;
   }
 
   .carre .format-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
     border: 2px solid #0A0A0A;
     color: #0A0A0A;
     font-family: 'Inter', sans-serif;
@@ -228,6 +226,11 @@
     padding: 12px 20px;
     border-radius: 4px;
     text-transform: uppercase;
+  }
+
+  .carre .live-dot {
+    width: 12px;
+    height: 12px;
   }
 
   .carre-center {
@@ -316,7 +319,7 @@
     <div class="label">Paysage — 1200 × 675</div>
     <div class="paysage">
       <div class="paysage-left">
-        <div class="logo"><span class="live-dot"></span>CONTENTPRENEUR CLUB</div>
+        <div class="logo">CONTENTPRENEUR CLUB</div>
         <div>
           <div class="hook-number">80%</div>
           <div class="hook-text">DE SON CA<br>VIENT DE SES STORIES</div>
@@ -327,7 +330,7 @@
         </div>
       </div>
       <div class="paysage-right">
-        <div class="format-tag">MASTERCLASS</div>
+        <div class="format-tag"><span class="live-dot"></span>MASTERCLASS</div>
         <div class="name">LARISSA<br><span>LORENZONI</span></div>
         <div class="date-block">
           <div class="day">JEUDI</div>
@@ -342,8 +345,8 @@
     <div class="label">Carré — 1080 × 1080</div>
     <div class="carre">
       <div class="carre-header">
-        <div class="logo"><span class="live-dot"></span>CONTENTPRENEUR CLUB</div>
-        <div class="format-tag">MASTERCLASS</div>
+        <div class="logo">CONTENTPRENEUR CLUB</div>
+        <div class="format-tag"><span class="live-dot"></span>MASTERCLASS</div>
       </div>
 
       <div class="carre-center">
