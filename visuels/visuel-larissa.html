@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Visuel Larissa — CPC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    font-family: 'Inter', sans-serif;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+  }
+
+  .label {
+    color: #fff;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    opacity: 0.6;
+  }
+
+  /* ───────── PAYSAGE 1200 × 675 ───────── */
+  .paysage {
+    width: 1200px;
+    height: 675px;
+    background: #0A0A0A;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    padding: 70px 80px;
+    gap: 60px;
+  }
+
+  .paysage::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -150px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(92,214,173,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .paysage-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .paysage .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: #5CD6AD;
+  }
+
+  .paysage .hook-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 200px;
+    color: #5CD6AD;
+    line-height: 0.85;
+    letter-spacing: -2px;
+  }
+
+  .paysage .hook-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: #ffffff;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-top: 10px;
+    max-width: 95%;
+  }
+
+  .paysage .footer-line {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: #ffffff;
+    opacity: 0.6;
+    margin-top: 24px;
+    line-height: 1.5;
+  }
+
+  .paysage-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: right;
+    position: relative;
+    z-index: 2;
+  }
+
+  .paysage .format-tag {
+    display: inline-block;
+    border: 1.5px solid #5CD6AD;
+    color: #5CD6AD;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .paysage .name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 110px;
+    color: #ffffff;
+    line-height: 0.9;
+    letter-spacing: 2px;
+    margin-top: auto;
+    text-align: right;
+  }
+
+  .paysage .name span {
+    color: #5CD6AD;
+  }
+
+  .paysage .date-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 24px;
+  }
+
+  .paysage .day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: #ffffff;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+
+  .paysage .time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: #5CD6AD;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+
+  /* ───────── CARRÉ 1080 × 1080 ───────── */
+  .carre {
+    width: 1080px;
+    height: 1080px;
+    background: #0A0A0A;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 80px 70px;
+  }
+
+  .carre::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(92,214,173,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .carre::after {
+    content: '';
+    position: absolute;
+    bottom: -200px;
+    left: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(92,214,173,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .carre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .carre .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 4px;
+    color: #5CD6AD;
+  }
+
+  .carre .format-tag {
+    border: 1.5px solid #5CD6AD;
+    color: #5CD6AD;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .carre-center {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .carre .hook-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 360px;
+    color: #5CD6AD;
+    line-height: 0.85;
+    letter-spacing: -4px;
+  }
+
+  .carre .hook-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: #ffffff;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-top: 16px;
+    max-width: 100%;
+  }
+
+  .carre .footer-line {
+    font-family: 'Inter', sans-serif;
+    font-size: 19px;
+    color: #ffffff;
+    opacity: 0.6;
+    margin-top: 30px;
+    line-height: 1.5;
+  }
+
+  .carre-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+
+  .carre .name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 110px;
+    color: #ffffff;
+    line-height: 0.9;
+    letter-spacing: 2px;
+  }
+
+  .carre .name span {
+    color: #5CD6AD;
+  }
+
+  .carre .date-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .carre .day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 70px;
+    color: #ffffff;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+
+  .carre .time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 70px;
+    color: #5CD6AD;
+    letter-spacing: 3px;
+    line-height: 1;
+    margin-top: 6px;
+  }
+
+  /* ───────── VARIANTES DÉGRADÉ VERT → NOIR ───────── */
+
+  .paysage.vert {
+    background: linear-gradient(115deg, #5CD6AD 0%, #5CD6AD 30%, #1f7a5f 55%, #0A0A0A 85%);
+  }
+  .paysage.vert::before {
+    background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08) 0%, transparent 60%);
+    top: 0;
+    right: auto;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .paysage.vert .logo { color: #0A0A0A; }
+  .paysage.vert .hook-number { color: #0A0A0A; }
+  .paysage.vert .hook-text { color: #0A0A0A; }
+  .paysage.vert .footer-line { color: #0A0A0A; opacity: 0.75; }
+  .paysage.vert .format-tag {
+    border-color: #5CD6AD;
+    color: #5CD6AD;
+  }
+  .paysage.vert .name { color: #ffffff; }
+  .paysage.vert .name span { color: #5CD6AD; }
+  .paysage.vert .day { color: #ffffff; }
+  .paysage.vert .time { color: #5CD6AD; }
+
+  .carre.vert {
+    background: linear-gradient(160deg, #5CD6AD 0%, #5CD6AD 28%, #1f7a5f 50%, #0A0A0A 78%);
+  }
+  .carre.vert::before {
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10) 0%, transparent 55%);
+    top: 0;
+    right: auto;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .carre.vert::after {
+    display: none;
+  }
+  .carre.vert .logo { color: #0A0A0A; }
+  .carre.vert .format-tag {
+    border-color: #0A0A0A;
+    color: #0A0A0A;
+  }
+  .carre.vert .hook-number { color: #0A0A0A; }
+  .carre.vert .hook-text { color: #ffffff; }
+  .carre.vert .footer-line { color: #ffffff; opacity: 0.7; }
+  .carre.vert .name { color: #ffffff; }
+  .carre.vert .name span { color: #5CD6AD; }
+  .carre.vert .day { color: #ffffff; }
+  .carre.vert .time { color: #5CD6AD; }
+</style>
+</head>
+<body>
+
+  <!-- PAYSAGE -->
+  <div>
+    <div class="label">Paysage — 1200 × 675</div>
+    <div class="paysage">
+      <div class="paysage-left">
+        <div class="logo">CONTENTPRENEUR CLUB</div>
+        <div>
+          <div class="hook-number">80%</div>
+          <div class="hook-text">DE SON CA<br>VIENT DE SES STORIES</div>
+          <div class="footer-line">
+            Sans pub. Sans tunnel. Sans gros lancement.<br>
+            6 chiffres par an. +1000 entrepreneuses formées.
+          </div>
+        </div>
+      </div>
+      <div class="paysage-right">
+        <div class="format-tag">MASTERCLASS · 1H30</div>
+        <div class="name">LARISSA<br><span>LORENZONI</span></div>
+        <div class="date-block">
+          <div class="day">JEUDI</div>
+          <div class="time">20H00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRÉ -->
+  <div>
+    <div class="label">Carré — 1080 × 1080</div>
+    <div class="carre">
+      <div class="carre-header">
+        <div class="logo">CONTENTPRENEUR CLUB</div>
+        <div class="format-tag">MASTERCLASS · 1H30</div>
+      </div>
+
+      <div class="carre-center">
+        <div class="hook-number">80%</div>
+        <div class="hook-text">DE SON CA VIENT<br>DE SES STORIES</div>
+        <div class="footer-line">
+          Sans pub. Sans tunnel. Sans gros lancement. Même pas de high ticket.<br>
+          6 chiffres par an depuis 3 ans. +1000 entrepreneuses formées.
+        </div>
+      </div>
+
+      <div class="carre-footer">
+        <div class="name">LARISSA<br><span>LORENZONI</span></div>
+        <div class="date-block">
+          <div class="day">JEUDI</div>
+          <div class="time">20H00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYSAGE VERT -->
+  <div>
+    <div class="label">Paysage vert — 1200 × 675</div>
+    <div class="paysage vert">
+      <div class="paysage-left">
+        <div class="logo">CONTENTPRENEUR CLUB</div>
+        <div>
+          <div class="hook-number">80%</div>
+          <div class="hook-text">DE SON CA<br>VIENT DE SES STORIES</div>
+          <div class="footer-line">
+            Sans pub. Sans tunnel. Sans gros lancement.<br>
+            6 chiffres par an. +1000 entrepreneuses formées.
+          </div>
+        </div>
+      </div>
+      <div class="paysage-right">
+        <div class="format-tag">MASTERCLASS · 1H30</div>
+        <div class="name">LARISSA<br><span>LORENZONI</span></div>
+        <div class="date-block">
+          <div class="day">JEUDI</div>
+          <div class="time">20H00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRÉ VERT -->
+  <div>
+    <div class="label">Carré vert — 1080 × 1080</div>
+    <div class="carre vert">
+      <div class="carre-header">
+        <div class="logo">CONTENTPRENEUR CLUB</div>
+        <div class="format-tag">MASTERCLASS · 1H30</div>
+      </div>
+
+      <div class="carre-center">
+        <div class="hook-number">80%</div>
+        <div class="hook-text">DE SON CA VIENT<br>DE SES STORIES</div>
+        <div class="footer-line">
+          Sans pub. Sans tunnel. Sans gros lancement. Même pas de high ticket.<br>
+          6 chiffres par an depuis 3 ans. +1000 entrepreneuses formées.
+        </div>
+      </div>
+
+      <div class="carre-footer">
+        <div class="name">LARISSA<br><span>LORENZONI</span></div>
+        <div class="date-block">
+          <div class="day">JEUDI</div>
+          <div class="time">20H00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
