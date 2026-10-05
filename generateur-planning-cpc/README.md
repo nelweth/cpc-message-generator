@@ -7,11 +7,13 @@ Génère le visuel "La semaine du club" sans Canva, directement depuis le naviga
 ## Utilisation (chaque semaine)
 
 1. Ouvre `index.html` dans Chrome (double-clic sur le fichier)
-2. Remplis les jours dans le formulaire à gauche :
+2. Les jours arrivent déjà pré-remplis avec le planning par défaut (voir plus bas)
+3. Modifie ce qui change cette semaine :
    - Coche "Repos" pour les jours sans intervention
    - Sinon remplis : heure, titre, intervenant(e), note (optionnel)
-3. Clique **Générer le planning** pour voir l'aperçu
-4. Screenshot le visuel (voir ci-dessous)
+   - Pour une masterclass habituelle, prends-la dans "Charger une intervention enregistrée"
+4. Clique **Générer le planning** pour voir l'aperçu
+5. Screenshot le visuel (voir ci-dessous)
 
 ---
 
@@ -38,11 +40,42 @@ Nécessite d'ajouter html2canvas une seule fois :
 
 ---
 
-## Modifier les valeurs par défaut
+## Le planning par défaut
 
-Les valeurs pré-remplies chaque semaine sont dans le fichier `index.html`, variable `DEFAULTS` (ligne ~90).
+Celui qui se charge à l'ouverture. Pour le changer, **plus besoin de toucher au code** :
 
-Exemple : si le lundi est toujours "Call de bienvenue avec KIKI à 20h", ça reste pré-rempli. Tu n'as qu'à modifier ce qui change.
+1. Remplis les 7 jours comme tu veux qu'ils soient pré-remplis chaque semaine
+2. Clique sur **Enregistrer comme planning par défaut**
+
+C'est mémorisé dans le navigateur. À chaque ouverture, tu retrouves ce planning, et tu n'as plus qu'à modifier ce qui bouge dans la semaine.
+
+**Recharger le planning par défaut** remet le formulaire dans cet état, si tu t'es emmêlée.
+
+La variable `DEFAULTS` dans `index.html` ne sert plus que de filet, au tout premier lancement sur un navigateur où rien n'est encore enregistré.
+
+---
+
+## Les interventions enregistrées
+
+Pour les masterclasses qui reviennent, et qu'on en a marre de réécrire.
+
+- **Enregistrer** : remplis un jour (heure, titre, intervenant, note), puis clique sur **Enregistrer cette intervention** en bas du bloc du jour
+- **Réutiliser** : sur n'importe quel jour, choisis-la dans **Charger une intervention enregistrée**. Les 4 champs se remplissent d'un coup
+- **Supprimer** : la croix à droite de son nom, en haut du formulaire
+
+Enregistrer une intervention qui porte un titre déjà pris remplace l'ancienne, après confirmation.
+
+---
+
+## ⚠️ Où tes enregistrements sont stockés
+
+Dans le navigateur, sur cet ordinateur (localStorage). Donc :
+
+- Un autre navigateur ou un autre ordi = une autre liste
+- Vider les données de navigation efface les enregistrements
+- La version ouverte en double-clic (`file://`) et la version en ligne (GitHub Pages) ont **chacune leur propre liste**. Choisis-en une et garde la même, sinon tu auras l'impression d'avoir tout perdu
+
+Si le navigateur bloque le stockage, l'outil le dit par un message et continue de marcher : tu remplis juste tout à la main, comme avant.
 
 ---
 

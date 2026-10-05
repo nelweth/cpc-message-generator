@@ -123,6 +123,98 @@
     font-weight: 500;
   }
 
+  .day-block select {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+  }
+
+  .btn-mini {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 10px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .btn-mini:hover { border-color: var(--accent); color: var(--accent); }
+
+  .library {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+
+  .library h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    margin: 0 0 4px;
+    color: var(--accent);
+  }
+
+  .library > p {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+
+  .lib-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .lib-item em { color: var(--text-dim); font-style: normal; font-size: 12px; }
+
+  .lib-del {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+
+  .lib-del:hover { color: #ff6b6b; }
+
+  .lib-empty { font-size: 12px; color: var(--text-dim); font-style: italic; margin: 0; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+
+  .btn-secondary {
+    flex: 1;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
   .repos-fields { display: none; }
   .event-fields { display: block; }
 
@@ -292,10 +384,20 @@
     <h1>CPC <span>/</span> Planning</h1>
     <p>Remplis les jours, génère le visuel, screenshot et c'est prêt.</p>
 
+    <div class="library">
+      <h3>Interventions enregistrées</h3>
+      <p>Enregistre les masterclasses qui reviennent, et recharge-les en un clic sur n'importe quel jour.</p>
+      <div id="library-list"></div>
+    </div>
+
     <div id="days-form"></div>
 
     <button class="btn-generate" onclick="generatePlanning()">Générer le planning</button>
     <button class="btn-screenshot" onclick="downloadPlanning()">Télécharger en PNG</button>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="saveAsDefault()">Enregistrer comme planning par défaut</button>
+      <button class="btn-secondary" onclick="resetForm()">Recharger le planning par défaut</button>
+    </div>
     <p class="hint">
       ⚠️ Pour télécharger, installe d'abord la librairie html2canvas (voir README).<br>
       Sinon : zoom Chrome à 100% → Cmd+Shift+4 → sélectionne le visuel.
@@ -317,6 +419,9 @@
 <script>
 const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
+// Filet de secours : sert au tout premier lancement, quand rien n'est encore
+// enregistré. Dès que tu cliques sur "Enregistrer comme planning par défaut",
+// c'est TON planning qui est chargé à la place, et plus besoin de toucher ici.
 const DEFAULTS = [
   { repos: false, heure: '20:00', titre: 'Call de bienvenue avec KIKI', intervenant: 'Krix', note: '' },
   { repos: false, heure: '18:30', titre: 'Call Soutien et Motivation', intervenant: 'Elizy', note: '' },
@@ -327,12 +432,59 @@ const DEFAULTS = [
   { repos: false, heure: '18:00', titre: 'Masterclass Productivité et Discipline', intervenant: 'Téo', note: '' },
 ];
 
+const KEY_PLANNING = 'cpc-planning-defaut';
+const KEY_LIB = 'cpc-interventions';
+
+// Échappe les valeurs avant de les remettre dans le HTML :
+// sans ça, un titre qui contient un guillemet casse tout le formulaire.
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function loadStore(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function saveStore(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (e) {
+    alert("Impossible d'enregistrer : ce navigateur bloque le stockage local.");
+    return false;
+  }
+}
+
+function getPlanning() {
+  const saved = loadStore(KEY_PLANNING, null);
+  return Array.isArray(saved) && saved.length === 7 ? saved : DEFAULTS;
+}
+
+function getLibrary() {
+  const lib = loadStore(KEY_LIB, []);
+  return Array.isArray(lib) ? lib : [];
+}
+
+function libOptions() {
+  return '<option value="">—</option>' +
+    getLibrary().map((it, j) => `<option value="${j}">${esc(it.titre)}</option>`).join('');
+}
+
 // Construit le formulaire
-function buildForm() {
-  const container = document.getElementById('days-form');
-  DAYS.forEach((day, i) => {
-    const d = DEFAULTS[i];
-    container.innerHTML += `
+function buildForm(planning) {
+  const options = libOptions();
+  document.getElementById('days-form').innerHTML = DAYS.map((day, i) => {
+    const d = planning[i] || { repos: true, heure: '', titre: '', intervenant: '', note: 'À demain !' };
+    return `
       <div class="day-block">
         <h3>${day.toUpperCase()}</h3>
         <div class="checkbox-row">
@@ -340,22 +492,25 @@ function buildForm() {
           <label for="repos-${i}">Repos / pas d'intervention</label>
         </div>
         <div class="event-fields" id="event-${i}" style="${d.repos ? 'display:none' : ''}">
+          <label>Charger une intervention enregistrée</label>
+          <select id="lib-${i}" onchange="applyIntervention(${i})">${options}</select>
           <label>Heure</label>
-          <input type="text" id="heure-${i}" value="${d.heure}" placeholder="ex : 20:00">
+          <input type="text" id="heure-${i}" value="${esc(d.heure)}" placeholder="ex : 20:00">
           <label>Titre de l'intervention</label>
-          <input type="text" id="titre-${i}" value="${d.titre}" placeholder="ex : Masterclass de Téo">
+          <input type="text" id="titre-${i}" value="${esc(d.titre)}" placeholder="ex : Masterclass de Téo">
           <label>Intervenant(e)</label>
-          <input type="text" id="intervenant-${i}" value="${d.intervenant}" placeholder="ex : Tox">
+          <input type="text" id="intervenant-${i}" value="${esc(d.intervenant)}" placeholder="ex : Tox">
           <label>Note (optionnel)</label>
-          <input type="text" id="note-${i}" value="${d.note}" placeholder="ex : Open à tous">
+          <input type="text" id="note-${i}" value="${esc(d.note)}" placeholder="ex : Open à tous">
+          <button class="btn-mini" onclick="saveIntervention(${i})">Enregistrer cette intervention</button>
         </div>
         <div class="repos-fields" id="repos-fields-${i}" style="${d.repos ? 'display:block' : ''}">
           <label>Message</label>
-          <input type="text" id="repos-msg-${i}" value="${d.note || 'À demain !'}" placeholder="À demain !">
+          <input type="text" id="repos-msg-${i}" value="${esc(d.note || 'À demain !')}" placeholder="À demain !">
         </div>
       </div>
     `;
-  });
+  }).join('');
 }
 
 function toggleRepos(i) {
@@ -364,26 +519,131 @@ function toggleRepos(i) {
   document.getElementById(`repos-fields-${i}`).style.display = isRepos ? 'block' : 'none';
 }
 
+// Lit l'état actuel des 7 jours
+function readForm() {
+  return DAYS.map((day, i) => {
+    if (document.getElementById(`repos-${i}`).checked) {
+      return {
+        repos: true, heure: '', titre: '', intervenant: '',
+        note: document.getElementById(`repos-msg-${i}`).value || 'À demain !',
+      };
+    }
+    return {
+      repos: false,
+      heure: document.getElementById(`heure-${i}`).value,
+      titre: document.getElementById(`titre-${i}`).value,
+      intervenant: document.getElementById(`intervenant-${i}`).value,
+      note: document.getElementById(`note-${i}`).value,
+    };
+  });
+}
+
+/* ── Interventions enregistrées ── */
+
+function renderLibrary() {
+  const box = document.getElementById('library-list');
+  const lib = getLibrary();
+  if (!lib.length) {
+    box.innerHTML = '<p class="lib-empty">Rien d\'enregistré pour l\'instant. Remplis un jour, puis clique sur « Enregistrer cette intervention ».</p>';
+    return;
+  }
+  box.innerHTML = lib.map((it, j) => {
+    const details = [it.intervenant, it.heure].filter(Boolean).join(' · ');
+    return `
+      <div class="lib-item">
+        <span>${esc(it.titre)}${details ? ` <em>${esc(details)}</em>` : ''}</span>
+        <button class="lib-del" onclick="deleteIntervention(${j})" title="Supprimer">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+// Repeuple les menus déroulants sans reconstruire le formulaire,
+// pour ne pas perdre ce qui est en cours de saisie.
+function refreshLibrarySelects() {
+  const options = libOptions();
+  DAYS.forEach((_, i) => {
+    const sel = document.getElementById(`lib-${i}`);
+    if (sel) { sel.innerHTML = options; sel.value = ''; }
+  });
+}
+
+function saveIntervention(i) {
+  const titre = document.getElementById(`titre-${i}`).value.trim();
+  if (!titre) {
+    alert("Donne d'abord un titre à l'intervention.");
+    return;
+  }
+  const item = {
+    titre,
+    heure: document.getElementById(`heure-${i}`).value.trim(),
+    intervenant: document.getElementById(`intervenant-${i}`).value.trim(),
+    note: document.getElementById(`note-${i}`).value.trim(),
+  };
+  const lib = getLibrary();
+  const existing = lib.findIndex(it => it.titre.toLowerCase() === titre.toLowerCase());
+  if (existing >= 0) {
+    if (!confirm(`« ${titre} » est déjà enregistrée. La remplacer ?`)) return;
+    lib[existing] = item;
+  } else {
+    lib.push(item);
+  }
+  lib.sort((a, b) => a.titre.localeCompare(b.titre, 'fr'));
+  if (!saveStore(KEY_LIB, lib)) return;
+  refreshLibrarySelects();
+  renderLibrary();
+}
+
+function applyIntervention(i) {
+  const sel = document.getElementById(`lib-${i}`);
+  if (sel.value === '') return;
+  const it = getLibrary()[Number(sel.value)];
+  sel.value = '';
+  if (!it) return;
+  document.getElementById(`heure-${i}`).value = it.heure || '';
+  document.getElementById(`titre-${i}`).value = it.titre || '';
+  document.getElementById(`intervenant-${i}`).value = it.intervenant || '';
+  document.getElementById(`note-${i}`).value = it.note || '';
+  generatePlanning();
+}
+
+function deleteIntervention(j) {
+  const lib = getLibrary();
+  if (!lib[j]) return;
+  if (!confirm(`Supprimer « ${lib[j].titre} » des interventions enregistrées ?`)) return;
+  lib.splice(j, 1);
+  if (!saveStore(KEY_LIB, lib)) return;
+  refreshLibrarySelects();
+  renderLibrary();
+}
+
+/* ── Planning par défaut ── */
+
+function saveAsDefault() {
+  if (!saveStore(KEY_PLANNING, readForm())) return;
+  alert('Planning par défaut enregistré. C\'est lui qui se chargera à chaque ouverture.');
+}
+
+function resetForm() {
+  if (!confirm('Recharger le planning par défaut ? Ce qui est à l\'écran sera perdu.')) return;
+  buildForm(getPlanning());
+  generatePlanning();
+}
+
 function generatePlanning() {
   const grid = document.getElementById('planning-grid');
   grid.innerHTML = '';
 
-  const cards = [];
-
-  DAYS.forEach((day, i) => {
-    const isRepos = document.getElementById(`repos-${i}`).checked;
-
-    if (isRepos) {
-      const msg = document.getElementById(`repos-msg-${i}`)?.value || 'À demain !';
-      cards.push({ day, isRepos: true, msg, fullWidth: false });
-    } else {
-      const heure = document.getElementById(`heure-${i}`).value;
-      const titre = document.getElementById(`titre-${i}`).value;
-      const intervenant = document.getElementById(`intervenant-${i}`).value;
-      const note = document.getElementById(`note-${i}`).value;
-      cards.push({ day, isRepos: false, heure, titre, intervenant, note, fullWidth: false });
-    }
-  });
+  const cards = readForm().map((d, i) => ({
+    day: DAYS[i],
+    isRepos: d.repos,
+    msg: d.note,
+    heure: d.heure,
+    titre: d.titre,
+    intervenant: d.intervenant,
+    note: d.note,
+    fullWidth: false,
+  }));
 
   // Dimanche seul en bas -> full width
   cards[6].fullWidth = true;
@@ -447,7 +707,8 @@ async function downloadPlanning() {
 }
 
 window.addEventListener('resize', scalePreview);
-buildForm();
+buildForm(getPlanning());
+renderLibrary();
 generatePlanning();
 </script>
 </body>
